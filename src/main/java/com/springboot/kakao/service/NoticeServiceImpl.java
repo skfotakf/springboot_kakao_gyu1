@@ -19,6 +19,7 @@ import com.springboot.kakao.model.beans.NoticeBean;
 import com.springboot.kakao.mapper.NoticeDao;
 import com.springboot.kakao.model.dto.NoticeDto;
 import com.springboot.kakao.model.dto.NoticeInsertDto;
+import com.springboot.kakao.model.dto.NoticeUpdateDto;
 
 @Service
 public class NoticeServiceImpl implements NoticeService {
@@ -75,12 +76,16 @@ public class NoticeServiceImpl implements NoticeService {
 	public NoticeDto fileUpload(NoticeInsertDto noticeInsertDto) {
 		MultipartFile[] multipartFiles = noticeInsertDto.getNotice_file();
 		String filePath = context.getRealPath("/static/fileupload");
+		NoticeDto noticeDto = new NoticeDto();
 		
 		StringBuilder originName = new StringBuilder();
 		StringBuilder tempName = new StringBuilder();
 		
 		for(MultipartFile multipartFile : multipartFiles) {
 			String originFile = multipartFile.getOriginalFilename();
+			if(originFile.equals("")) {
+				return noticeDto;
+			}
 			String originFileExtension = originFile.substring(originFile.lastIndexOf("."));
 			String tempFile = UUID.randomUUID().toString().replaceAll("-", "") + originFileExtension;
 		
@@ -91,7 +96,6 @@ public class NoticeServiceImpl implements NoticeService {
 			
 			File file = new File(filePath, tempFile);
 			if(!file.exists()) {
-				file.mkdir();
 				file.mkdirs();
 			}
 		
@@ -105,7 +109,6 @@ public class NoticeServiceImpl implements NoticeService {
 		originName.delete(originName.length()-1, originName.length());
 		tempName.delete(tempName.length()-1, tempName.length());
 		
-		NoticeDto noticeDto = new NoticeDto();
 		noticeDto.setOriginFileNames(originName.toString());
 		noticeDto.setTempFileNames(tempName.toString());
 		return noticeDto;
@@ -207,6 +210,98 @@ public class NoticeServiceImpl implements NoticeService {
 			}
 		}
 		
+		return result;
+	}
+
+	public StringBuilder deleteFileName(String[] fileNames, String[] deleteFileNames) {
+		System.out.println("되고 있니?");
+		StringBuilder buildName = new StringBuilder();
+		if(fileNames != null) {
+			for(String fileName : fileNames) {
+				int count = 0;
+				if(deleteFileNames != null) {
+					for(String deleteFileName : deleteFileNames) {
+						if(fileName.equals(deleteFileName)) {
+							count++;
+							break;
+						}
+					}
+				}
+				if ( count == 0 ) {
+					buildName.append(fileName);
+					buildName.append(",");
+				}
+			}
+			
+		}
+		
+		
+		return buildName;
+	}
+	public NoticeDto fileUpdate(NoticeUpdateDto noticeUpdateDto) {
+		System.out.println("되고 있지");
+		NoticeDto noticeDto = new NoticeDto();
+		
+		StringBuilder originNames = deleteFileName(noticeUpdateDto.getOriginFileNames(), noticeUpdateDto.getDeleteOriginFileNames());
+		StringBuilder tempNames = deleteFileName(noticeUpdateDto.getTempFileNames(), noticeUpdateDto.getDeleteTempFileNames());
+		
+		MultipartFile[] multipartFiles = noticeUpdateDto.getNotice_file();
+		String filePath = context.getRealPath("/static/fileupload");
+		
+		if(multipartFiles != null) {
+			for(MultipartFile multipartFile : multipartFiles) {
+				String originFile = multipartFile.getOriginalFilename();
+				if(originFile.equals("")  || multipartFile == null) {
+					break;
+				}
+				
+				String originFileExtension = originFile.substring(originFile.lastIndexOf("."));
+				String tempFile = UUID.randomUUID().toString().replaceAll("-", "") + originFileExtension;
+				
+				originNames.append(originFile);
+				originNames.append(",");
+				tempNames.append(tempFile);
+				tempNames.append(",");
+				
+				File file = new File(filePath, tempFile);  // , tempFile 필수
+				if(!file.exists()) {
+					file.mkdirs();  // 하위 경로 모두 포함
+				}
+				
+				try {
+					multipartFile.transferTo(file);     // multipartFile을 file에 카피할 것
+				} catch (IllegalStateException | IOException e) {
+					e.printStackTrace();
+				}  
+			}
+		}
+		
+		
+		if(originNames.length() != 0) {
+			originNames.delete(originNames.length() -1, originNames.length());
+			tempNames.delete(tempNames.length() -1, tempNames.length());
+			
+			noticeDto.setOriginFileNames(originNames.toString()); // toString 필수
+			noticeDto.setTempFileNames(tempNames.toString());
+		}
+		return noticeDto;
+	}
+	@Override
+	public int noticeUpdate(NoticeUpdateDto noticeUpdateDto) {
+		System.out.println("되고있음");
+		NoticeDto noticeDto = fileUpdate(noticeUpdateDto);
+		noticeDto.setNotice_code(noticeUpdateDto.getNotice_code());
+		noticeDto.setNotice_content(noticeUpdateDto.getNotice_content());
+		int result = noticeDao.noticeUpdate(noticeDto);
+		if(result == 1 && noticeUpdateDto.getDeleteOriginFileNames() != null) {
+			String filePath = context.getRealPath("/static/fileupload");
+			for(String fileName : noticeUpdateDto.getDeleteTempFileNames()) {
+				File file = new File(filePath, fileName);
+				if(file.exists()) {
+					file.delete();
+				}
+			}
+		}
 		return result;
 	}
 	

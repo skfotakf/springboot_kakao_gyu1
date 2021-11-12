@@ -97,8 +97,11 @@
 			notice_dtl
 		set
 			notice_content = #{notice_content},
-			originFileNames = #{originFileNames},
-			tempFileNames = #{tempFileNames},
+			<if test="originFileNames != null">
+				originFileNames = #{originFileNames},
+				tempFileNames = #{tempFileNames},
+			</if>
+			
 			update_date = now()
 		where
 			notice_code = #{notice_code};
@@ -111,4 +114,6 @@
 		where
 			notice_code = #{notice_code};
 	</delete>
+
+	
 </mapper>
