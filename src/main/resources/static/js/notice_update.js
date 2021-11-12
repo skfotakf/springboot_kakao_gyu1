@@ -1,12 +1,30 @@
 const notice_submit = document.querySelector(".notice_submit");
 const updateForm = document.querySelector("#update-form");
+const file_dbtn = document.querySelectorAll('.file-dbtn');
+const file_name = document.querySelectorAll('.file-name');
+
+for(let i = 0; i < file_dbtn.length; i++){
+  file_dbtn[i].onclick = () =>{
+    if(file_name[i].style.textDecoration == 'none' || file_name[i].style.textDecoration == ''){
+      file_name[i].style.textDecoration = 'line-through';
+    } else{
+      file_name[i].style.textDecoration =  'none';
+    }
+  }
+}
 
 function noticeUpdate(){
 	let formData = new FormDate(updateForm);
+	for(let i = 0; i<file_name.length; i++){
+		if(file_name[i].style.textDecoration == 'line-through'){
+			let originFileName = formData.getAll('originFileNames');
+		}
+	}
 	
 	$.ajax({
 		type: "put",
 		url: "notice/"+formData.get('notice_code'),
+		enctype: "multipart/form-data",
 		data: formData,
 		processData: false,
 		contentType: false,

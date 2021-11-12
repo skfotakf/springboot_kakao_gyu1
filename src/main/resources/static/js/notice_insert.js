@@ -6,7 +6,7 @@ function noticeInsert(){
 	
 	$.ajax({
 		type: "post",
-		url: "notice/insert",
+		url: "/notice/insert",
 		enctype: "multipart/form-data",
 		data: formData,
 		processData: false,
@@ -14,10 +14,10 @@ function noticeInsert(){
 		success: function(data){
 			if(data == 0){
 				alert('공지사항 등록 실패');
-				location.href = 'notice/list/1';
+				location.href = '/notice/list/1';
 			} else{
 				alert('공지사항 등록 완료');
-				location.href = 'notice/' + data;
+				location.href = '/notice/' + data;
 			}	
 		},
 		error: function(){

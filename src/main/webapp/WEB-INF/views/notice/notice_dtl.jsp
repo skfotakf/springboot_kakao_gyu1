@@ -8,9 +8,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>뉴스</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/mainNav.css">
-    <link rel="stylesheet" href="css/notice_dtl.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/mainNav.css">
+    <link rel="stylesheet" href="/css/notice_dtl.css">
 </head>
 <body>
 	<div class="container">
@@ -67,14 +67,14 @@
                 	<ul class="nd_footer_next">
                         <li class="next_title">다음 글</li>
                         <c:if test="${notice.nextNotice_code ne 0 }">
-                        	<a href="notice/${notice.nextNotice_code }"><li>${notice.nextNotice_title }</li></a>
+                        	<a href="/notice/${notice.nextNotice_code }"><li>${notice.nextNotice_title }</li></a>
                         </c:if>
                         
                     </ul>
                     <ul class="nd_footer_pre">
                         <li class="pre_title">이전 글</li>
                         <c:if test="${notice.preNotice_code ne 0 }">
-                        	<a href="notice/${notice.preNotice_code }"><li>${notice.preNotice_title }</li></a>
+                        	<a href="/notice/${notice.preNotice_code }"><li>${notice.preNotice_title }</li></a>
                         </c:if>
                     </ul>
                     
@@ -86,7 +86,7 @@
         </footer>
 	</div>
 		<script src="https://kit.fontawesome.com/c3df4d7d1c.js" crossorigin="anonymous"></script>
-		<script type="text/javascript" src="js/notice_dtl.js"></script>
+		<script type="text/javascript" src="/js/notice_dtl.js"></script>
 		
 </body>
 </html>

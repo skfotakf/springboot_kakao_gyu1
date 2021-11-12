@@ -83,12 +83,14 @@ public class NoticeController {
 		return "notice/notice_dtl";
 	}
 	
-	@PutMapping("/update/{code}")
+	@GetMapping("/update/{code}")
 	public String noticeUpdateIndex(Model model, @PathVariable String code) {
 		NoticeDto noticeDto = noticeService.getNotice(code);
-		model.addAttribute(code);
+		model.addAttribute("notice",noticeDto);
+		model.addAttribute("fileList", noticeService.getFileList(noticeDto));
 		return "notice/notice_update";
 	}
+	
 	@DeleteMapping("/{code}")
 	public String noticeDelete(Model model, @PathVariable String code) {
 		System.out.println("되고 있음");
