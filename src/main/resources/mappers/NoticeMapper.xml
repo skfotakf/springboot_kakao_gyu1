@@ -18,13 +18,14 @@
 		order by
 			notice_code desc
 	</select>
+	
 	<select id="getNoticeMaxCode" resultType="Integer">
 		select
 			max(notice_code)
 		from
 			notice_mst;
-			
 	</select>
+	
 	<insert id="noticeMstInsert" parameterType="com.springboot.kakao.model.dto.NoticeDto">
 		insert into
 			notice_mst
@@ -38,6 +39,7 @@
 			now()
 		)
 	</insert>
+	
 	<insert id="noticeDtlInsert" parameterType="com.springboot.kakao.model.dto.NoticeDto">
 		insert into
 			notice_dtl
@@ -84,6 +86,7 @@
 		where 
 			notice_code = #{notice_code};
 	</update>
+	
 	<delete id="noticeMstDelete">
 		delete
 		from
@@ -97,11 +100,8 @@
 			notice_dtl
 		set
 			notice_content = #{notice_content},
-			<if test="originFileNames != null">
-				originFileNames = #{originFileNames},
-				tempFileNames = #{tempFileNames},
-			</if>
-			
+			originFileNames = #{originFileNames},
+			tempFileNames = #{tempFileNames},
 			update_date = now()
 		where
 			notice_code = #{notice_code};
@@ -114,6 +114,4 @@
 		where
 			notice_code = #{notice_code};
 	</delete>
-
-	
 </mapper>

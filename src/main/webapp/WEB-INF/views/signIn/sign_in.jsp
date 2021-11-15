@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/sign_in.css">
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+    <meta name="google-signin-client_id" content="255968834405-10eak4n3n4mf8iip36heu3gtr2sgm0q8.apps.googleusercontent.com">
 </head>
 <body>
     <div class="container">
@@ -63,7 +65,8 @@
                         </div>
                         <button class="item_btn btn_qr"><i class="fas fa-qrcode"></i>&nbsp; QR코드 로그인</button>
                     </div>
-                
+                    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+                    <a href="#" onclick="signOut();">Sign out</a>
                     <div class="info_user">
                         <a href="signUp">회원가입</a>
                         <div>
@@ -91,5 +94,81 @@
     </div>
     <script src="js/sign_in.js"></script>
     <script src="https://kit.fontawesome.com/c3df4d7d1c.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    	function init(){
+    		gapi.load('auth2', function(){
+    			let gauth = gapi.auth2.init({
+    				client_id: '255968834405-10eak4n3n4mf8iip36heu3gtr2sgm0q8.apps.googleusercontent.com'
+    			});
+    			/*
+    			gauth.then(
+    				function(){
+    					if(gauth.isSignedIn.get()){
+    						alert('로그인 중');
+    					} else{
+    						alert('로그인 필요');
+    					}
+    					
+    				},
+    				function(){
+    					alert('로그인 실패');
+    				}
+    			
+    			)
+    			*/
+    			
+    		});
+    	}
+    	
+    	function signUpCheck(profile){
+    		let profileObj = {
+    				signUpEmail: profile.getEmail(),
+    				emailFlag: 1,
+    				signUpPassword: '',
+    				signUpName: profile.getName(),
+    				signUpPhone: '',
+    				phoneFlag: 1
+    		};
+    		
+    		$.ajax({
+    			type: 'post',
+    			url: '/oauth2/signupcheck',
+    			data: JSON.stringify(profileObj),
+    			dataType: "text",
+    			contentType: "application/json; charset=UTF-8",
+    			success: function(data){
+    				alert(data);
+    			},
+    			error: function(){
+    				alert('전송오류!');
+    			}
+    					
+    			
+    			
+    		})
+    	}
+    	
+	    function onSignIn(googleUser) {
+	    	
+	    		  var profile = googleUser.getBasicProfile();
+	    		  signUpCheck(profile);
+	    		  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+	    		  console.log('Name: ' + profile.getName());
+	    		  console.log('Image URL: ' + profile.getImageUrl());
+	    		  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+	    		
+		}
+	    
+	    
+	    function signOut() {
+		    var auth2 = gapi.auth2.getAuthInstance();
+		    auth2.signOut().then(function () {
+		      console.log('User signed out.');
+		    });
+		  }
+		
+    </script>
+    
+     <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
 </body>
 </html>

@@ -53,9 +53,7 @@ notice_submit.onclick = () => {
 		alert("로그인이 되지 않았습니다. 로그인 후 사용바랍니다");
 	} else if(notice_content.value.length == 0) {
 		alert("공지사항 내용을 입력해주세요");
-	} else {
-		
+	} else {	
 		noticeUpdate();
-
 	}
 }

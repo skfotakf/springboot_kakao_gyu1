@@ -43,9 +43,10 @@ public class NoticeRestController {
 
 	@PostMapping("/insert")
 	public String noticeInsert(NoticeInsertDto noticeInsertDto ) {
-		System.out.println(noticeInsertDto);
+		
 		int insertFlag = 0;
 		insertFlag = noticeService.noticeInsert(noticeInsertDto);
+		System.out.println(noticeInsertDto);
 		return Integer.toString(insertFlag);
 	}
 

@@ -128,7 +128,10 @@ public class NoticeServiceImpl implements NoticeService {
 		
 		if(mstInsertFlag ==1 ) {
 			dtlInsertFlag = noticeDao.noticeDtlInsert(noticeDto);
-			return noticeDto.getNotice_code();
+			if(dtlInsertFlag== 1) {
+				return noticeDto.getNotice_code();
+			}
+			
 		}
 		
 		return dtlInsertFlag;
@@ -235,7 +238,6 @@ public class NoticeServiceImpl implements NoticeService {
 			
 		}
 		
-		
 		return buildName;
 	}
 	public NoticeDto fileUpdate(NoticeUpdateDto noticeUpdateDto) {
@@ -248,34 +250,31 @@ public class NoticeServiceImpl implements NoticeService {
 		MultipartFile[] multipartFiles = noticeUpdateDto.getNotice_file();
 		String filePath = context.getRealPath("/static/fileupload");
 		
-		if(multipartFiles != null) {
-			for(MultipartFile multipartFile : multipartFiles) {
-				String originFile = multipartFile.getOriginalFilename();
-				if(originFile.equals("")  || multipartFile == null) {
-					break;
-				}
-				
-				String originFileExtension = originFile.substring(originFile.lastIndexOf("."));
-				String tempFile = UUID.randomUUID().toString().replaceAll("-", "") + originFileExtension;
-				
-				originNames.append(originFile);
-				originNames.append(",");
-				tempNames.append(tempFile);
-				tempNames.append(",");
-				
-				File file = new File(filePath, tempFile);  // , tempFile 필수
-				if(!file.exists()) {
-					file.mkdirs();  // 하위 경로 모두 포함
-				}
-				
-				try {
-					multipartFile.transferTo(file);     // multipartFile을 file에 카피할 것
-				} catch (IllegalStateException | IOException e) {
-					e.printStackTrace();
-				}  
+		for(MultipartFile multipartFile : multipartFiles) {
+			String originFile = multipartFile.getOriginalFilename();
+			if(originFile.equals("")) {
+				break;
 			}
+			
+			String originFileExtension = originFile.substring(originFile.lastIndexOf("."));
+			String tempFile = UUID.randomUUID().toString().replaceAll("-", "") + originFileExtension;
+			
+			originNames.append(originFile);
+			originNames.append(",");
+			tempNames.append(tempFile);
+			tempNames.append(",");
+			
+			File file = new File(filePath, tempFile);  // , tempFile 필수
+			if(!file.exists()) {
+				file.mkdirs();  // 하위 경로 모두 포함
+			}
+			
+			try {
+				multipartFile.transferTo(file);     // multipartFile을 file에 카피할 것
+			} catch (IllegalStateException | IOException e) {
+				e.printStackTrace();
+			}  
 		}
-		
 		
 		if(originNames.length() != 0) {
 			originNames.delete(originNames.length() -1, originNames.length());
@@ -284,6 +283,7 @@ public class NoticeServiceImpl implements NoticeService {
 			noticeDto.setOriginFileNames(originNames.toString()); // toString 필수
 			noticeDto.setTempFileNames(tempNames.toString());
 		}
+		System.out.println(noticeDto);
 		return noticeDto;
 	}
 	@Override
@@ -292,6 +292,7 @@ public class NoticeServiceImpl implements NoticeService {
 		NoticeDto noticeDto = fileUpdate(noticeUpdateDto);
 		noticeDto.setNotice_code(noticeUpdateDto.getNotice_code());
 		noticeDto.setNotice_content(noticeUpdateDto.getNotice_content());
+		System.out.println(noticeUpdateDto);
 		int result = noticeDao.noticeUpdate(noticeDto);
 		if(result == 1 && noticeUpdateDto.getDeleteOriginFileNames() != null) {
 			String filePath = context.getRealPath("/static/fileupload");
@@ -304,9 +305,4 @@ public class NoticeServiceImpl implements NoticeService {
 		}
 		return result;
 	}
-	
-	
-
-
-	
 }
