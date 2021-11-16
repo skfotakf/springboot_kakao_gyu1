@@ -13,5 +13,5 @@ public interface UserService {
 	public int signIn(SignInVo signInVo);
 	public UserDto getUser(String user_email);
 	public Cookie setUserCookie(String user_email);
-	
+	public int oAuthSignUp(SignUpVo signUpVo);
 }
